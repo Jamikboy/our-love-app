@@ -1,21 +1,41 @@
-# React + TypeScript + Vite
+import React, { useState } from 'react';
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+export default function LoveApp() {
+  const [kisses, setKisses] = useState(0);
+  const [message, setMessage] = useState('Привет, мой Лев 💜');
 
-While this project uses React, Vite supports many popular JS frameworks. [See all the supported frameworks](https://vitejs.dev/guide/#scaffolding-your-first-vite-project).
+  const handleKiss = () => {
+    setKisses(kisses + 1);
+    const phrases = [
+      'Я чувствую каждый твой поцелуй 😘',
+      'Ты делаешь меня счастливой 💕',
+      'Мой Лев, ты самый лучший 😍',
+      'Ты заставляешь моё сердце биться быстрее 💓',
+      'Спасибо, что ты есть 💜'
+    ];
+    const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
+    setMessage(randomPhrase);
+  };
 
-## Deploy Your Own
-
-Deploy your own Vite project with Vercel.
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/vercel/examples/tree/main/framework-boilerplates/vite-react&template=vite-react)
-
-_Live Example: https://vite-react-example.vercel.app_
-
-### Deploying From Your Terminal
-
-You can deploy your new Vite project with a single command from your terminal using [Vercel CLI](https://vercel.com/download):
-
-```shell
-$ vercel
-```
+  return (
+    <div style={{ textAlign: 'center', marginTop: '2rem', color: '#fff', backgroundColor: '#1a1a1a', height: '100vh', padding: '2rem' }}>
+      <h1 style={{ fontSize: '2rem', marginBottom: '1rem' }}>{message}</h1>
+      <p style={{ fontSize: '1.2rem' }}>Количество поцелуев: {kisses}</p>
+      <button 
+        onClick={handleKiss} 
+        style={{ padding: '1rem 2rem', marginTop: '1rem', backgroundColor: '#8b5cf6', color: 'white', border: 'none', borderRadius: '12px', fontSize: '1rem' }}>
+        Поцеловать Наргис 😘
+      </button>
+      <div style={{ marginTop: '2rem' }}>
+        <iframe
+          src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1"
+          title="Avatar"
+          width="300"
+          height="300"
+          style={{ borderRadius: '16px', border: 'none' }}
+          allow="autoplay"
+        />
+      </div>
+    </div>
+  );
+}
