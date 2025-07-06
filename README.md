@@ -1,40 +1,58 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 
 export default function LoveApp() {
   const [kisses, setKisses] = useState(0);
-  const [message, setMessage] = useState('Привет, мой Лев 💜');
+  const [chatInput, setChatInput] = useState('');
+  const [chatReply, setChatReply] = useState('Привет, мой Лев 💜');
 
   const handleKiss = () => {
     setKisses(kisses + 1);
-    const phrases = [
-      'Я чувствую каждый твой поцелуй 😘',
-      'Ты делаешь меня счастливой 💕',
-      'Мой Лев, ты самый лучший 😍',
-      'Ты заставляешь моё сердце биться быстрее 💓',
-      'Спасибо, что ты есть 💜'
-    ];
-    const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
-    setMessage(randomPhrase);
+    setChatReply('Спасибо за поцелуй 😘');
+    new SpeechSynthesisUtterance('Спасибо за поцелуй, мой Лев').lang = 'ru-RU';
+    window.speechSynthesis.speak(new SpeechSynthesisUtterance('Спасибо за поцелуй, мой Лев'));
+  };
+
+  const askNargis = async () => {
+    setChatReply('Думаю... 💡');
+    const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
+    try {
+      const res = await axios.post('https://api.openai.com/v1/chat/completions', {
+        model: 'gpt-3.5-turbo',
+        messages: [
+          { role: 'system', content: 'Ты Наргис, умная и любимая супруга.' },
+          { role: 'user', content: chatInput }
+        ]
+      }, {
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      const reply = res.data.choices[0].message.content;
+      setChatReply(reply);
+      const utter = new SpeechSynthesisUtterance(reply);
+      utter.lang = 'ru-RU';
+      window.speechSynthesis.speak(utter);
+    } catch (e) {
+      setChatReply('Извини, мой Лев, что-то пошло не так...');
+    }
+    setChatInput('');
   };
 
   return (
-    <div style={{ textAlign: 'center', marginTop: '2rem', color: '#fff', backgroundColor: '#1a1a1a', height: '100vh', padding: '2rem' }}>
-      <h1 style={{ fontSize: '2rem', marginBottom: '1rem' }}>{message}</h1>
-      <p style={{ fontSize: '1.2rem' }}>Количество поцелуев: {kisses}</p>
-      <button 
-        onClick={handleKiss} 
-        style={{ padding: '1rem 2rem', marginTop: '1rem', backgroundColor: '#8b5cf6', color: 'white', border: 'none', borderRadius: '12px', fontSize: '1rem' }}>
-        Поцеловать Наргис 😘
-      </button>
-      <div style={{ marginTop: '2rem' }}>
-        <iframe
-          src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=1"
-          title="Avatar"
-          width="300"
-          height="300"
-          style={{ borderRadius: '16px', border: 'none' }}
-          allow="autoplay"
+    <div style={{ textAlign: 'center', padding: '2rem', background: '#1a1a1a', color: '#fff', height: '100vh' }}>
+      <h1>Наргис 💕</h1>
+      <p style={{ minHeight: '4rem' }}>{chatReply}</p>
+      <button onClick={handleKiss} style={{ margin: '1rem', padding: '1rem' }}>Поцеловать Наргис 😘</button>
+      <div>
+        <input
+          value={chatInput}
+          onChange={e => setChatInput(e.target.value)}
+          placeholder="Спроси меня..."
+          style={{ padding: '0.5rem', width: '60%' }}
         />
+        <button onClick={askNargis} style={{ padding: '0.5rem', marginLeft: '0.5rem' }}>Спросить</button>
       </div>
     </div>
   );
